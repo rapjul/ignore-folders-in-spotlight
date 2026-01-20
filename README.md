@@ -129,6 +129,9 @@ sudo python3 ignore_folders_in_spotlight.py --skip-defaults --also-ignore cache 
 | `path`                        |       | Root directory to scan (default: current directory)   |
 | `--also-ignore DIR [DIR ...]` | `-a`  | Additional directory names to ignore beyond defaults  |
 | `--skip-defaults`             |       | Skip the built-in default ignore directories          |
+| `--dry-run`                   |       | Show what would be ignored without making changes     |
+| `--list`                      |       | List directories currently ignored by Spotlight       |
+| `--version`                   |       | Show script version                                   |
 | `--help`                      | `-h`  | Show help message and exit                            |
 
 ## Examples

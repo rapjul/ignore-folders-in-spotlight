@@ -9,7 +9,7 @@ that's named "node_modules" or "target".
 
 If PATH is omitted, it uses the current working directory.
 
-Written by Alex Chan.
+Original script written by Alex Chan.
 See https://alexwlchan.net/2021/08/ignore-lots-of-folders-in-spotlight/
 
 """
@@ -173,19 +173,20 @@ def get_current_ignores():
     #     </plist>
     #
     try:
-        return {s.text for s in ET.fromstring(output).iter("string")}
+        return {s.text for s in ET.fromstring(output).iter("string") if s.text}
     except ET.ParseError as e:
         print("Failed to parse Spotlight configuration XML", file=sys.stderr)
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def ignore_path_in_spotlight(path: Path):
+def ignore_path_in_spotlight(path: Path, dry_run: bool = False):
     """
     Ignore a path in Spotlight, if it's not already ignored.
 
     Args:
         path: The path to ignore in Spotlight.
+        dry_run: If True, don't actually modify the Spotlight configuration.
 
     Raises:
         SystemExit: If unable to update the Spotlight configuration.
@@ -194,6 +195,9 @@ def ignore_path_in_spotlight(path: Path):
 
     path_str = str(path.resolve())
     if path_str in already_ignored:
+        return
+
+    if dry_run:
         return
 
     try:
@@ -240,8 +244,8 @@ def main():
         help="Root path to search for directories to ignore (default: current directory)",
     )
     parser.add_argument(
-        "-a",
         "--also-ignore",
+        "-a",
         nargs="+",
         metavar="DIR",
         help="Additional directory names to ignore beyond the defaults (e.g., --also-ignore .vscode .idea)",
@@ -250,6 +254,24 @@ def main():
         "--skip-defaults",
         action="store_true",
         help="Skip the built-in default ignore directories",
+    )
+    parser.add_argument(
+        "--dry-run",
+        "-n",
+        action="store_true",
+        help="Show what would be ignored without making changes",
+    )
+    parser.add_argument(
+        "--list",
+        action="store_true",
+        help="List directories currently ignored by Spotlight",
+    )
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="version",
+        version="%(prog)s 1.0.0",
+        help="Show script version",
     )
 
     args = parser.parse_args()
@@ -261,6 +283,21 @@ def main():
         print("Please run:", file=sys.stderr)
         print(f"    sudo python3 {sys.argv[0]} {args.path}", file=sys.stderr)
         sys.exit(1)
+
+    if args.list:
+        print("Currently ignored directories:")
+        try:
+            current_ignores = get_current_ignores()
+        except FileNotFoundError:
+            # Fallback if plutil missing, though checked in get_current_ignores
+            sys.exit(1)
+
+        if not current_ignores:
+            print("  (None)")
+        else:
+            for path in sorted(current_ignores):
+                print(f"  {path}")
+        return
 
     root = args.path.resolve()
 
@@ -279,14 +316,17 @@ def main():
         sys.exit(1)
 
     print(f"Ignoring directories: {', '.join(sorted(ignore_dirs))}")
+    if args.dry_run:
+        print("(Dry run: No changes will be made)")
     print()
 
-    create_backup_of_spotlight_plist()
+    if not args.dry_run:
+        create_backup_of_spotlight_plist()
 
     print("The following paths will be ignored by Spotlight")
     paths_added = 0
     for path in get_paths_to_ignore(root=root, ignore_dirs=ignore_dirs):
-        ignore_path_in_spotlight(path)
+        ignore_path_in_spotlight(path, dry_run=args.dry_run)
         print(path)
         paths_added += 1
 
@@ -295,6 +335,10 @@ def main():
         return
 
     print(f"\nAdded {paths_added} path(s) to Spotlight exclusions")
+
+    if args.dry_run:
+        return
+
     print("Restarting Spotlight indexing service...")
 
     # Restart the Spotlight metadata server to apply changes
