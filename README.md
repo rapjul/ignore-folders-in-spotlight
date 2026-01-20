@@ -40,7 +40,21 @@ By default, the script ignores these common development directories:
 | `coverage`     | Test coverage reports             |
 | `Pods`         | CocoaPods dependencies (iOS/macOS)|
 
+## Quick Run (No Installation)
+
+If you have [uv](https://docs.astral.sh/uv/) installed, you can run the script directly from git without cloning:
+
+```bash
+# Run directly from GitHub (replace with actual repository URL)
+sudo uvx --from git+https://github.com/rapjul/ignore-folders-in-spotlight.git ignore-folders-in-spotlight ~/Projects
+
+# With additional options
+sudo uvx --from git+https://github.com/rapjul/ignore-folders-in-spotlight.git ignore-folders-in-spotlight --also-ignore .idea .vscode ~/Projects
+```
+
 ## Installation
+
+### Option 1: Traditional Installation
 
 1. **Clone or download this repository:**
 
@@ -54,6 +68,18 @@ By default, the script ignores these common development directories:
    ```bash
    python3 --version
    ```
+
+### Option 2: Install with uv
+
+If you have [uv](https://docs.astral.sh/uv/) installed:
+
+```bash
+# Install directly from git
+uv tool install git+https://github.com/rapjul/ignore-folders-in-spotlight.git
+
+# Run from anywhere
+sudo ignore_folders_in_spotlight ~/Projects
+```
 
 ## Usage
 

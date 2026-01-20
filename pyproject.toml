@@ -1,0 +1,43 @@
+[project]
+name = "ignore-folders-in-spotlight"
+version = "1.0.0"
+description = "Automatically configure macOS Spotlight to ignore common development directories"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Alex Chan" },
+  { name = "rapjul" },
+]
+keywords = ["folders", "ignore", "indexing", "macos", "search", "spotlight"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Environment :: MacOS X",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Filesystems",
+  "Topic :: Utilities",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/rapjul/ignore-folders-in-spotlight/issues"
+Homepage = "https://github.com/rapjul/ignore-folders-in-spotlight"
+Repository = "https://github.com/rapjul/ignore-folders-in-spotlight"
+
+[project.scripts]
+ignore-folders-in-spotlight = "ignore_folders_in_spotlight:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
